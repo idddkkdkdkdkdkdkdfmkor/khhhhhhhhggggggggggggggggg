@@ -1,0 +1,6 @@
+{
+  "name": "K.G. Senior Secondary School - Sector 21, Gurugram",
+  "description": "Official website of K.G. Senior Secondary School, Sector 21 / Dundahera, Gurugram, Haryana. Admissions open for Nursery to Class XII in Science, Commerce, and Humanities. UDISE: 06180100104.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

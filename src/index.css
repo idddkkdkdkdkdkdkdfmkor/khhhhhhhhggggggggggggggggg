@@ -1,0 +1,767 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CSS CUSTOM PROPERTIES
+═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --vna-primary:       #aa2c38;
+  --vna-primary-dark:  #8c1f2b;
+  --vna-accent:        #ff885e;
+  --vna-plum:          #5f2a5d;
+  --vna-dark:          #161922;
+
+  /* Sidebar dimensions */
+  --sidebar-w:         250px;
+  --mobile-header-h:   60px;
+
+  /* Transition timings */
+  --t-normal:          300ms;
+  --t-ease:            cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Breakpoint — sidebar collapses below this CSS viewport width.
+     Covers: browser zoom changes, window resize, narrow laptops, tablets.
+     250px sidebar + 810px min-content + ~17px scrollbar ≈ 1077px → use 1060px */
+  --sidebar-break:     1060px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════════════════════════════ */
+@layer base {
+  body {
+    font-family: 'Lexend', system-ui, -apple-system, sans-serif;
+    color: #333333;
+    background-color: #ffffff;
+  }
+
+  h1, h2, h3, h4, h5, h6, .heading-font {
+    font-family: 'Lexend', 'Sora', sans-serif;
+  }
+
+  button, .btn-font {
+    font-family: 'Poppins', 'Lexend', sans-serif;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYOUT — ROOT & CONTENT AREA
+   The entire responsive layout pivot lives here.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Root wrapper — full height, white bg */
+.kg-app-root {
+  min-height: 100vh;
+  background: #fff;
+  color: #333;
+  font-family: 'Lexend', system-ui, sans-serif;
+}
+
+/* Content area — sits to the right of the sidebar on desktop,
+   full width + below top header on mobile. */
+.kg-content-area {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Desktop: offset to the right of the fixed sidebar */
+  margin-left: var(--sidebar-w);
+  /* Smooth transition when viewport crosses the breakpoint */
+  transition: margin-left var(--t-normal) var(--t-ease),
+              padding-top  var(--t-normal) var(--t-ease);
+}
+
+/* ─── Layout breakpoint rules (< 1060px) ─────────────────────────────────── */
+@media (max-width: 1059px) {
+  .kg-content-area {
+    margin-left: 0;
+    /* Space for fixed mobile top header */
+    padding-top: var(--mobile-header-h);
+  }
+  .kg-sidebar {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1060px) {
+  .kg-mobile-header {
+    display: none !important;
+  }
+  .kg-drawer, .kg-overlay {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESKTOP LEFT SIDEBAR
+═══════════════════════════════════════════════════════════════════════════ */
+.kg-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 2px 0 16px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Smooth collapse — handled by JS (isNarrow removes the element),
+     but add the transition for when it re-appears */
+  transition: transform var(--t-normal) var(--t-ease),
+              opacity  var(--t-normal) var(--t-ease);
+}
+
+/* ─── Logo area ──────────────────────────────────────────────────────────── */
+.kg-sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 14px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+  transition: background 180ms;
+}
+.kg-sidebar__logo:hover { background: #fef2f2; }
+
+.kg-logo-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #aa2c38, #8c1f2b);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(170,44,56,0.35);
+  border: 2px solid rgba(255,255,255,0.25);
+}
+.kg-logo-badge--sm {
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.kg-logo-text { display: flex; flex-direction: column; }
+.kg-logo-name {
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #111;
+  letter-spacing: -0.3px;
+}
+.kg-logo-name--sm { font-size: 11px; }
+.kg-logo-sub {
+  font-size: 9px;
+  color: #888;
+  margin-top: 2px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+/* ─── Contact strip ──────────────────────────────────────────────────────── */
+.kg-sidebar__contact {
+  padding: 8px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.kg-contact-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #555;
+  text-decoration: none;
+  transition: color 150ms;
+}
+.kg-contact-link:hover { color: #aa2c38; }
+.kg-contact-email {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 190px;
+}
+
+/* ─── Nav ────────────────────────────────────────────────────────────────── */
+.kg-sidebar__nav {
+  flex: 1;
+  padding: 8px 0;
+  overflow-y: auto;
+}
+
+.kg-nav-item-wrap { display: flex; flex-direction: column; }
+
+.kg-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #333;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  border-left: 3px solid transparent;
+  position: relative;
+}
+.kg-nav-item:hover {
+  background: #fef2f2;
+  color: #aa2c38;
+}
+.kg-nav-item--active {
+  color: #aa2c38;
+  font-weight: 700;
+  background: #fef2f2;
+  border-left-color: #aa2c38;
+}
+
+.kg-nav-item__icon { color: #888; display: flex; align-items: center; flex-shrink: 0; }
+.kg-nav-item--active .kg-nav-item__icon { color: #aa2c38; }
+.kg-nav-item__label { flex: 1; }
+.kg-nav-item__chevron {
+  width: 14px;
+  height: 14px;
+  color: #aaa;
+  transition: transform var(--t-normal) var(--t-ease);
+  flex-shrink: 0;
+}
+.kg-nav-item__chevron--open { transform: rotate(180deg); }
+
+/* Dropdown children */
+.kg-nav-dropdown {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--t-normal) var(--t-ease);
+  background: #fafafa;
+  border-left: 3px solid #f0d0d2;
+}
+.kg-nav-dropdown--open { max-height: 500px; }
+
+.kg-nav-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 7px 14px 7px 20px;
+  font-size: 11.5px;
+  color: #555;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.kg-nav-child:hover { background: #fef2f2; color: #aa2c38; }
+.kg-nav-child--active { color: #aa2c38; font-weight: 600; }
+
+/* ─── Social ─────────────────────────────────────────────────────────────── */
+.kg-sidebar__social {
+  padding: 10px 14px;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+.kg-social-label {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #999;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.kg-social-icons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.kg-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #555;
+  background: #f5f5f5;
+  text-decoration: none;
+  transition: background 150ms, color 150ms;
+}
+.kg-social-link:hover { background: #aa2c38; color: #fff; }
+
+/* ─── CTA ────────────────────────────────────────────────────────────────── */
+.kg-sidebar__cta {
+  padding: 10px 14px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.kg-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 12px;
+  background: #aa2c38;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 150ms, transform 150ms;
+}
+.kg-cta-btn:hover { background: #8c1f2b; transform: translateY(-1px); }
+
+.kg-cta-row {
+  display: flex;
+  gap: 6px;
+}
+.kg-cta-secondary {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f8f8f8;
+  color: #444;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  text-align: center;
+}
+.kg-cta-secondary:hover { background: #fef2f2; color: #aa2c38; border-color: #f0d0d2; }
+
+.kg-cta-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #161922;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 150ms;
+  text-align: center;
+}
+.kg-cta-login:hover { background: #000; }
+
+/* ─── UDISE ──────────────────────────────────────────────────────────────── */
+.kg-sidebar__udise {
+  padding: 6px 14px 10px;
+  font-size: 9px;
+  color: #bbb;
+  font-weight: 500;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE / NARROW VIEWPORT
+   Compact top header + off-canvas full-height drawer
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Mobile top header ──────────────────────────────────────────────────── */
+.kg-mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--mobile-header-h);
+  z-index: 200;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+}
+
+.kg-mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.kg-mobile-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.kg-mobile-apply {
+  padding: 5px 12px;
+  background: #aa2c38;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.kg-mobile-apply:hover { background: #8c1f2b; }
+
+/* ─── Hamburger button ───────────────────────────────────────────────────── */
+.kg-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 8px;
+  transition: background 150ms;
+}
+.kg-hamburger:hover { background: #fef2f2; }
+
+/* ─── Animated hamburger bars ────────────────────────────────────────────── */
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 22px;
+  height: 18px;
+  position: relative;
+}
+
+.bar {
+  display: block;
+  width: 22px;
+  height: 2.5px;
+  background: #333;
+  border-radius: 2px;
+  position: absolute;
+  left: 0;
+  transform-origin: center;
+  transition: transform var(--t-normal) var(--t-ease),
+              opacity   var(--t-normal) var(--t-ease),
+              top       var(--t-normal) var(--t-ease);
+}
+
+.bar-1 { top: 2px; }
+.bar-2 { top: 50%; transform: translateY(-50%); }
+.bar-3 { bottom: 2px; top: auto; }
+
+/* Open state — morph into × */
+.bar-1-open {
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+.bar-2-open {
+  opacity: 0;
+  transform: translateY(-50%) scaleX(0);
+}
+.bar-3-open {
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+/* ─── Semi-transparent overlay ───────────────────────────────────────────── */
+.kg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity    var(--t-normal) var(--t-ease),
+              visibility var(--t-normal) var(--t-ease);
+  pointer-events: none;
+}
+.kg-overlay--visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+/* ─── Off-canvas drawer ──────────────────────────────────────────────────── */
+.kg-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(320px, 90vw);
+  z-index: 210;
+  background: #fff;
+  box-shadow: 4px 0 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* Slide in from left + fade */
+  transform: translateX(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform var(--t-normal) var(--t-ease),
+              opacity   var(--t-normal) var(--t-ease),
+              visibility var(--t-normal) var(--t-ease);
+  pointer-events: none;
+}
+
+.kg-drawer--open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+/* Drawer header */
+.kg-drawer__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+  flex-shrink: 0;
+}
+.kg-drawer__close {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 150ms;
+  flex-shrink: 0;
+}
+.kg-drawer__close:hover { background: #fef2f2; }
+
+/* Drawer contact */
+.kg-drawer__contact {
+  padding: 8px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Drawer nav */
+.kg-drawer__nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.kg-drawer-item-wrap { display: flex; flex-direction: column; }
+
+.kg-drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  border-left: 3px solid transparent;
+}
+.kg-drawer-item:hover { background: #fef2f2; color: #aa2c38; }
+.kg-drawer-item--active {
+  color: #aa2c38;
+  font-weight: 700;
+  background: #fef2f2;
+  border-left-color: #aa2c38;
+}
+
+.kg-drawer-item__icon { color: #888; display: flex; align-items: center; flex-shrink: 0; }
+.kg-drawer-item--active .kg-drawer-item__icon { color: #aa2c38; }
+.kg-drawer-item__label { flex: 1; }
+.kg-drawer-item__chevron {
+  width: 15px;
+  height: 15px;
+  color: #aaa;
+  transition: transform var(--t-normal) var(--t-ease);
+  flex-shrink: 0;
+}
+.kg-drawer-item__chevron--open { transform: rotate(180deg); }
+
+/* Children accordion */
+.kg-drawer-children {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--t-normal) var(--t-ease);
+  background: #fafafa;
+  border-left: 3px solid #f0d0d2;
+}
+.kg-drawer-children--open { max-height: 600px; }
+
+.kg-drawer-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 14px 8px 22px;
+  font-size: 12px;
+  color: #555;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.kg-drawer-child:hover { background: #fef2f2; color: #aa2c38; }
+.kg-drawer-child--active { color: #aa2c38; font-weight: 600; }
+
+/* Drawer quick actions */
+.kg-drawer__actions {
+  padding: 10px 14px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Drawer social */
+.kg-drawer__social {
+  padding: 10px 14px;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+/* Drawer UDISE */
+.kg-drawer__udise {
+  padding: 6px 14px 10px;
+  font-size: 9px;
+  color: #bbb;
+  font-weight: 500;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES (keep existing ones)
+═══════════════════════════════════════════════════════════════════════════ */
+.text-vna-primary  { color: #aa2c38; }
+.bg-vna-primary    { background-color: #aa2c38; }
+.border-vna-primary { border-color: #aa2c38; }
+.hover\:bg-vna-primary-dark:hover { background-color: #8c1f2b; }
+.hover\:text-vna-primary:hover    { color: #aa2c38; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NOTICE BOARD SCROLL
+═══════════════════════════════════════════════════════════════════════════ */
+@keyframes marqueeVertical {
+  0%   { transform: translateY(0%); }
+  100% { transform: translateY(-50%); }
+}
+
+.notice-scroll-container { overflow: hidden; position: relative; }
+.notice-scroll-container:hover .notice-scroll-content { animation-play-state: paused; }
+.notice-scroll-content { animation: marqueeVertical 25s linear infinite; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CUSTOM SCROLLBAR
+═══════════════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar        { width: 7px; height: 7px; }
+::-webkit-scrollbar-track  { background: #f1f1f1; }
+::-webkit-scrollbar-thumb  { background: #aa2c38; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #8c1f2b; }
+
+/* Sidebar gets a thinner scrollbar */
+.kg-sidebar::-webkit-scrollbar,
+.kg-drawer__nav::-webkit-scrollbar { width: 4px; }
+
+
+.text-vna-primary {
+  color: #aa2c38;
+}
+
+.bg-vna-primary {
+  background-color: #aa2c38;
+}
+
+.border-vna-primary {
+  border-color: #aa2c38;
+}
+
+.hover\:bg-vna-primary-dark:hover {
+  background-color: #8c1f2b;
+}
+
+.hover\:text-vna-primary:hover {
+  color: #aa2c38;
+}
+
+@keyframes marqueeVertical {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.notice-scroll-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.notice-scroll-container:hover .notice-scroll-content {
+  animation-play-state: paused;
+}
+
+.notice-scroll-content {
+  animation: marqueeVertical 25s linear infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #aa2c38;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8c1f2b;
+}
+
